@@ -1,10 +1,40 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import Sidebar from "./components/Sidebar";
+
+import Dashboard from "./pages/Dashboard";
+import Produtos from "./pages/Produtos";
+import Estoque from "./pages/Estoque";
+import Vendas from "./pages/Vendas";
+
 
 function App() {
   return (
-    <div>
-      <Sidebar />
-    </div>
+    <BrowserRouter>
+
+      <div className="app">
+
+        <Sidebar />
+
+        <main className="content">
+
+          <Routes>
+
+            <Route path="/" element={<Dashboard />} />
+
+            <Route path="/produtos" element={<Produtos />} />
+
+            <Route path="/estoque" element={<Estoque />} />
+
+            <Route path="/vendas" element={<Vendas />} />
+
+          </Routes>
+
+        </main>
+
+      </div>
+
+    </BrowserRouter>
   );
 }
 

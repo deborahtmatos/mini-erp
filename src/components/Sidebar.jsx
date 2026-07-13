@@ -5,31 +5,33 @@ import {
   ShoppingCart 
 } from "lucide-react";
 
+import { Link } from "react-router-dom";
+
 function Sidebar() {
   return (
     <aside className="sidebar">
       <h1 className="logo">Mini ERP</h1>
 
       <nav>
-        <a href="#">
+        <Link to="/">
           <LayoutDashboard size={20} />
           Dashboard
-        </a>
+        </Link>
 
-        <a href="#">
+        <Link to="/produtos">
           <Package size={20} />
           Produtos
-        </a>
+        </Link>
 
-        <a href="#">
+        <Link to="/estoque">
           <Warehouse size={20} />
           Estoque
-        </a>
+        </Link>
 
-        <a href="#">
+        <Link to="/vendas">
           <ShoppingCart size={20} />
           Vendas
-        </a>
+        </Link>
       </nav>
     </aside>
   );
