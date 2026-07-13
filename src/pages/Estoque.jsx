@@ -8,9 +8,9 @@ import {
 
 function Estoque() {
 
-
   const [produtos, setProdutos] = useState([]);
 
+  const [quantidades, setQuantidades] = useState({});
 
 
 
@@ -19,7 +19,6 @@ function Estoque() {
     carregarEstoque();
 
   }, []);
-
 
 
 
@@ -34,36 +33,63 @@ function Estoque() {
 
 
 
+  function alterarQuantidade(event, id) {
 
-  function alterarEstoque(id, tipo) {
+    setQuantidades({
+
+      ...quantidades,
+
+      [id]: event.target.value
+
+    });
+
+  }
 
 
-    const produto = produtos.find(
-      (item) => item.id === id
-    );
+
+
+  function movimentarEstoque(produto, tipo) {
+
+
+    const quantidadeMovimentada =
+      Number(quantidades[produto.id]);
 
 
 
-    let quantidadeAtual =
+    if (!quantidadeMovimentada) {
+      return;
+    }
+
+
+
+    let novaQuantidade =
       Number(produto.quantidade);
 
 
 
     if (tipo === "entrada") {
 
-      quantidadeAtual += 1;
+      novaQuantidade += quantidadeMovimentada;
 
     }
 
 
 
-    if (tipo === "saida" && quantidadeAtual > 0) {
+    if (tipo === "saida") {
 
-      quantidadeAtual -= 1;
+
+      if (quantidadeMovimentada > novaQuantidade) {
+
+        alert("Quantidade de saída maior que o estoque");
+
+        return;
+
+      }
+
+
+      novaQuantidade -= quantidadeMovimentada;
 
     }
-
-
 
 
 
@@ -71,10 +97,9 @@ function Estoque() {
 
       ...produto,
 
-      quantidade: quantidadeAtual
+      quantidade: novaQuantidade
 
     };
-
 
 
 
@@ -85,9 +110,17 @@ function Estoque() {
     carregarEstoque();
 
 
+
+    setQuantidades({
+
+      ...quantidades,
+
+      [produto.id]: ""
+
+    });
+
+
   }
-
-
 
 
 
@@ -97,9 +130,7 @@ function Estoque() {
     <div>
 
 
-      <h1>
-        Estoque
-      </h1>
+      <h1>Estoque</h1>
 
 
 
@@ -113,6 +144,8 @@ function Estoque() {
             <th>Produto</th>
 
             <th>Categoria</th>
+
+            <th>Estoque Atual</th>
 
             <th>Quantidade</th>
 
@@ -149,30 +182,61 @@ function Estoque() {
               </td>
 
 
+              <td>
+
+                <input
+
+                  type="number"
+
+                  value={
+                    quantidades[item.id] || ""
+                  }
+
+                  onChange={(event) =>
+                    alterarQuantidade(
+                      event,
+                      item.id
+                    )
+                  }
+
+                />
+
+              </td>
+
+
 
               <td>
 
 
                 <button
+
                   onClick={() =>
-                    alterarEstoque(item.id, "entrada")
+                    movimentarEstoque(
+                      item,
+                      "entrada"
+                    )
                   }
+
                 >
 
-                  ➕
+                  ➕ Entrada
 
                 </button>
 
 
 
-
                 <button
+
                   onClick={() =>
-                    alterarEstoque(item.id, "saida")
+                    movimentarEstoque(
+                      item,
+                      "saida"
+                    )
                   }
+
                 >
 
-                  ➖
+                  ➖ Saída
 
                 </button>
 
@@ -195,11 +259,9 @@ function Estoque() {
       </table>
 
 
-
     </div>
 
   );
-
 
 }
 
