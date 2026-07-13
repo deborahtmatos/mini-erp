@@ -1,8 +1,18 @@
 import { useState, useEffect } from "react";
 
+import {
+  buscarProdutos,
+  adicionarProduto,
+  atualizarProduto,
+  removerProduto
+} from "../services/produtoService";
+
+
 function Produtos() {
 
+
   const [produtos, setProdutos] = useState([]);
+
 
   const [produto, setProduto] = useState({
     nome: "",
@@ -12,70 +22,178 @@ function Produtos() {
   });
 
 
-  // Carrega produtos salvos quando abrir a página
-  useEffect(() => {
-    const produtosSalvos = localStorage.getItem("produtos");
+  const [editando, setEditando] = useState(null);
 
-    if (produtosSalvos) {
-      setProdutos(JSON.parse(produtosSalvos));
-    }
+
+
+  // Carrega produtos ao abrir a tela
+  useEffect(() => {
+
+    const produtosSalvos = buscarProdutos();
+
+    setProdutos(produtosSalvos);
+
   }, []);
 
 
-  // Salva produtos sempre que houver alteração na lista
-  useEffect(() => {
-    console.log("Salvando produtos:", produtos);
-
-    localStorage.setItem(
-      "produtos",
-      JSON.stringify(produtos)
-    );
-
-  }, [produtos]);
 
 
   function handleChange(event) {
+
     setProduto({
+
       ...produto,
       [event.target.name]: event.target.value
+
     });
+
   }
 
 
+
+
+
   function cadastrarProduto(event) {
+
     event.preventDefault();
 
-    const novoProduto = {
-      id: Date.now(),
-      nome: produto.nome,
-      categoria: produto.categoria,
-      preco: produto.preco,
-      quantidade: produto.quantidade
-    };
 
 
-    setProdutos([
-      ...produtos,
-      novoProduto
-    ]);
+    if (editando) {
+
+
+      const produtoAtualizado = {
+
+        id: editando,
+        ...produto
+
+      };
+
+
+      const produtosAtualizados =
+        atualizarProduto(produtoAtualizado);
+
+
+      setProdutos(produtosAtualizados);
+
+
+      setEditando(null);
+
+
+
+    } else {
+
+
+
+      const novoProduto = {
+
+        id: Date.now(),
+        ...produto
+
+      };
+
+
+      const produtosAtualizados =
+        adicionarProduto(novoProduto);
+
+
+
+      setProdutos(produtosAtualizados);
+
+
+    }
+
+
+
+    limparFormulario();
+
+  }
+
+
+
+
+
+
+  function editarProduto(item) {
 
 
     setProduto({
+
+      nome: item.nome,
+      categoria: item.categoria,
+      preco: item.preco,
+      quantidade: item.quantidade
+
+    });
+
+
+
+    setEditando(item.id);
+
+
+  }
+
+
+
+
+
+
+
+  function excluirProduto(id) {
+
+
+    const produtosAtualizados =
+      removerProduto(id);
+
+
+
+    setProdutos(produtosAtualizados);
+
+
+  }
+
+
+
+
+
+
+  function limparFormulario() {
+
+
+    setProduto({
+
       nome: "",
       categoria: "",
       preco: "",
       quantidade: ""
+
     });
+
+
   }
 
 
+
+
+
+
   return (
+
     <div>
+
 
       <h1>Produtos</h1>
 
 
+      <p>
+        Total de produtos: {produtos.length}
+      </p>
+
+
+
+
       <form onSubmit={cadastrarProduto}>
+
 
         <input
           name="nome"
@@ -83,6 +201,7 @@ function Produtos() {
           value={produto.nome}
           onChange={handleChange}
         />
+
 
 
         <input
@@ -93,12 +212,14 @@ function Produtos() {
         />
 
 
+
         <input
           name="preco"
           placeholder="Preço"
           value={produto.preco}
           onChange={handleChange}
         />
+
 
 
         <input
@@ -109,29 +230,164 @@ function Produtos() {
         />
 
 
+
         <button type="submit">
-          Cadastrar produto
+
+          {editando
+            ? "Salvar alteração"
+            : "Cadastrar produto"}
+
         </button>
+
+
+
+        {editando && (
+
+          <button
+
+            type="button"
+
+            onClick={() => {
+
+              setEditando(null);
+              limparFormulario();
+
+            }}
+
+          >
+
+            Cancelar
+
+          </button>
+
+        )}
+
+
 
       </form>
 
 
-      <h2>Produtos cadastrados</h2>
 
 
-      <ul>
-        {produtos.map((item) => (
-          <li key={item.id}>
-            {item.nome} - {item.categoria} -
-            R$ {item.preco} -
-            Estoque: {item.quantidade}
-          </li>
-        ))}
-      </ul>
+
+      <h2>
+        Produtos cadastrados
+      </h2>
+
+
+
+
+
+      <table>
+
+
+        <thead>
+
+          <tr>
+
+            <th>Produto</th>
+
+            <th>Categoria</th>
+
+            <th>Preço</th>
+
+            <th>Quantidade</th>
+
+            <th>Ações</th>
+
+
+          </tr>
+
+        </thead>
+
+
+
+
+
+        <tbody>
+
+
+          {produtos.map((item) => (
+
+
+            <tr key={item.id}>
+
+
+              <td>
+                {item.nome}
+              </td>
+
+
+              <td>
+                {item.categoria}
+              </td>
+
+
+              <td>
+                R$ {item.preco}
+              </td>
+
+
+              <td>
+                {item.quantidade}
+              </td>
+
+
+
+              <td>
+
+
+                <button
+
+                  onClick={() => editarProduto(item)}
+
+                >
+
+                  ✏️ Editar
+
+                </button>
+
+
+
+                <button
+
+                  onClick={() => excluirProduto(item.id)}
+
+                >
+
+                  🗑️ Excluir
+
+                </button>
+
+
+
+              </td>
+
+
+
+            </tr>
+
+
+          ))}
+
+
+
+        </tbody>
+
+
+
+      </table>
+
+
 
 
     </div>
+
+
   );
+
+
 }
+
 
 export default Produtos;
