@@ -6,11 +6,21 @@ import {
 } from "../services/produtoService";
 
 
+import {
+  adicionarMovimentacao
+} from "../services/movimentacaoService";
+
+
+
 function Estoque() {
+
 
   const [produtos, setProdutos] = useState([]);
 
+
   const [quantidades, setQuantidades] = useState({});
+
+
 
 
 
@@ -22,18 +32,31 @@ function Estoque() {
 
 
 
+
+
+
+
   function carregarEstoque() {
+
 
     const produtosSalvos = buscarProdutos();
 
+
     setProdutos(produtosSalvos);
+
 
   }
 
 
 
 
+
+
+
+
+
   function alterarQuantidade(event, id) {
+
 
     setQuantidades({
 
@@ -43,7 +66,13 @@ function Estoque() {
 
     });
 
+
   }
+
+
+
+
+
 
 
 
@@ -56,58 +85,150 @@ function Estoque() {
 
 
 
-    if (!quantidadeMovimentada) {
+
+    if (!quantidadeMovimentada || quantidadeMovimentada <= 0) {
+
+
+      alert("Informe uma quantidade válida");
+
+
       return;
+
+
     }
 
 
 
+
+
+
+
     let novaQuantidade =
-      Number(produto.quantidade);
+      Number(produto.quantidade || 0);
+
+
+
 
 
 
     if (tipo === "entrada") {
 
+
       novaQuantidade += quantidadeMovimentada;
 
+
     }
+
+
+
+
 
 
 
     if (tipo === "saida") {
 
 
+
       if (quantidadeMovimentada > novaQuantidade) {
 
-        alert("Quantidade de saída maior que o estoque");
+
+        alert(
+          "Quantidade de saída maior que o estoque"
+        );
+
 
         return;
+
 
       }
 
 
+
+
+
       novaQuantidade -= quantidadeMovimentada;
+
+
 
     }
 
 
 
+
+
+
+
+
     const produtoAtualizado = {
+
 
       ...produto,
 
+
       quantidade: novaQuantidade
+
 
     };
 
 
 
+
+
+
+
+    // Atualiza produto no cadastro
+
     atualizarProduto(produtoAtualizado);
 
 
 
+
+
+
+
+
+
+    // Registra movimentação vinculada ao produto
+
+    adicionarMovimentacao({
+
+
+
+      id: Date.now(),
+
+
+      produtoId: produto.id,
+
+
+      data: new Date().toLocaleString("pt-BR"),
+
+
+      produto: produto.nome,
+
+
+      tipo:
+        tipo === "entrada"
+          ? "Entrada"
+          : "Saída",
+
+
+      quantidade: quantidadeMovimentada
+
+
+
+    });
+
+
+
+
+
+
+
+
     carregarEstoque();
+
+
+
 
 
 
@@ -120,26 +241,44 @@ function Estoque() {
     });
 
 
+
   }
+
+
+
+
+
 
 
 
 
   return (
 
+
     <div>
 
 
-      <h1>Estoque</h1>
+
+      <h1>
+        Estoque
+      </h1>
+
+
+
+
 
 
 
       <table>
 
 
+
         <thead>
 
+
+
           <tr>
+
 
             <th>Produto</th>
 
@@ -151,9 +290,16 @@ function Estoque() {
 
             <th>Ações</th>
 
+
+
           </tr>
 
+
+
         </thead>
+
+
+
 
 
 
@@ -161,61 +307,117 @@ function Estoque() {
         <tbody>
 
 
+
+
+
+
           {produtos.map((item) => (
+
+
+
+
 
 
             <tr key={item.id}>
 
 
+
+
+
+
               <td>
+
                 {item.nome}
+
               </td>
 
 
+
+
+
+
+
               <td>
+
                 {item.categoria}
+
               </td>
 
 
+
+
+
+
+
               <td>
+
                 {item.quantidade}
+
               </td>
 
 
+
+
+
+
+
               <td>
+
+
 
                 <input
 
+
                   type="number"
+
 
                   value={
                     quantidades[item.id] || ""
                   }
 
+
                   onChange={(event) =>
+
                     alterarQuantidade(
                       event,
                       item.id
                     )
+
                   }
+
 
                 />
 
+
+
               </td>
+
+
+
+
+
+
 
 
 
               <td>
 
 
+
+
+
                 <button
 
+
                   onClick={() =>
+
                     movimentarEstoque(
                       item,
                       "entrada"
                     )
+
                   }
+
 
                 >
 
@@ -225,30 +427,56 @@ function Estoque() {
 
 
 
+
+
+
+
+
                 <button
 
+
                   onClick={() =>
+
                     movimentarEstoque(
                       item,
                       "saida"
                     )
+
                   }
+
 
                 >
 
+
                   ➖ Saída
 
+
                 </button>
+
+
+
 
 
 
               </td>
 
 
+
+
+
+
+
             </tr>
 
 
+
+
+
+
           ))}
+
+
+
 
 
 
@@ -256,14 +484,26 @@ function Estoque() {
 
 
 
+
+
+
       </table>
+
+
+
+
 
 
     </div>
 
+
+
   );
 
+
+
 }
+
 
 
 export default Estoque;

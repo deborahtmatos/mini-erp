@@ -26,28 +26,62 @@ function Produtos() {
 
 
 
-  // Carrega produtos ao abrir a tela
+
   useEffect(() => {
 
-    const produtosSalvos = buscarProdutos();
-
-    setProdutos(produtosSalvos);
+    carregarProdutos();
 
   }, []);
 
 
 
 
+
+  function carregarProdutos() {
+
+    const produtosSalvos = buscarProdutos();
+
+
+    const produtosCorrigidos = produtosSalvos.map((item) => ({
+
+      ...item,
+
+      id: item.id || Date.now(),
+
+      quantidade: Number(item.quantidade || 0),
+
+      preco: item.preco || "0"
+
+    }));
+
+
+    setProdutos(produtosCorrigidos);
+
+
+  }
+
+
+
+
+
+
+
   function handleChange(event) {
+
 
     setProduto({
 
       ...produto,
+
       [event.target.name]: event.target.value
 
     });
 
+
   }
+
+
+
 
 
 
@@ -55,29 +89,61 @@ function Produtos() {
 
   function cadastrarProduto(event) {
 
+
     event.preventDefault();
+
+
+
+
+
+    if (!produto.nome) {
+
+      alert("Informe o nome do produto");
+
+      return;
+
+    }
+
+
+
 
 
 
     if (editando) {
 
 
+
       const produtoAtualizado = {
 
+
         id: editando,
-        ...produto
+
+        ...produto,
+
+
+        quantidade: Number(produto.quantidade || 0)
+
 
       };
 
 
+
+
+
       const produtosAtualizados =
+
         atualizarProduto(produtoAtualizado);
+
+
+
 
 
       setProdutos(produtosAtualizados);
 
 
+
       setEditando(null);
+
 
 
 
@@ -85,29 +151,59 @@ function Produtos() {
 
 
 
+
+
       const novoProduto = {
 
+
         id: Date.now(),
-        ...produto
+
+
+        ...produto,
+
+
+        quantidade: Number(produto.quantidade || 0)
+
 
       };
 
 
+
+
+
+
+
       const produtosAtualizados =
+
         adicionarProduto(novoProduto);
+
+
+
 
 
 
       setProdutos(produtosAtualizados);
 
 
+
+
+
     }
+
+
+
 
 
 
     limparFormulario();
 
+
+
+
   }
+
+
+
 
 
 
@@ -117,21 +213,28 @@ function Produtos() {
   function editarProduto(item) {
 
 
+
     setProduto({
 
       nome: item.nome,
+
       categoria: item.categoria,
+
       preco: item.preco,
+
       quantidade: item.quantidade
 
     });
 
 
 
+
     setEditando(item.id);
 
 
+
   }
+
 
 
 
@@ -143,14 +246,20 @@ function Produtos() {
 
 
     const produtosAtualizados =
+
       removerProduto(id);
+
 
 
 
     setProdutos(produtosAtualizados);
 
 
+
   }
+
+
+
 
 
 
@@ -163,11 +272,15 @@ function Produtos() {
     setProduto({
 
       nome: "",
+
       categoria: "",
+
       preco: "",
+
       quantidade: ""
 
     });
+
 
 
   }
@@ -177,12 +290,21 @@ function Produtos() {
 
 
 
+
+
+
   return (
+
 
     <div>
 
 
-      <h1>Produtos</h1>
+      <h1>
+        Produtos
+      </h1>
+
+
+
 
 
       <p>
@@ -192,67 +314,121 @@ function Produtos() {
 
 
 
+
+
+
       <form onSubmit={cadastrarProduto}>
 
 
+
+
         <input
+
           name="nome"
+
           placeholder="Nome do produto"
+
           value={produto.nome}
+
           onChange={handleChange}
+
         />
 
 
 
+
+
+
         <input
+
           name="categoria"
+
           placeholder="Categoria"
+
           value={produto.categoria}
+
           onChange={handleChange}
+
         />
 
 
 
+
+
+
         <input
+
           name="preco"
+
           placeholder="Preço"
+
           value={produto.preco}
+
           onChange={handleChange}
+
         />
+
+
+
 
 
 
         <input
+
           name="quantidade"
+
           placeholder="Quantidade"
+
           value={produto.quantidade}
+
           onChange={handleChange}
+
         />
+
+
+
+
 
 
 
         <button type="submit">
 
+
           {editando
+
             ? "Salvar alteração"
+
             : "Cadastrar produto"}
+
 
         </button>
 
 
 
+
+
+
+
         {editando && (
+
+
 
           <button
 
+
             type="button"
+
 
             onClick={() => {
 
+
               setEditando(null);
+
               limparFormulario();
 
+
             }}
+
 
           >
 
@@ -260,11 +436,20 @@ function Produtos() {
 
           </button>
 
+
+
         )}
 
 
 
+
+
+
       </form>
+
+
+
+
 
 
 
@@ -278,12 +463,16 @@ function Produtos() {
 
 
 
+
       <table>
 
 
         <thead>
 
+
           <tr>
+
+            <th>ID</th>
 
             <th>Produto</th>
 
@@ -298,7 +487,10 @@ function Produtos() {
 
           </tr>
 
+
         </thead>
+
+
 
 
 
@@ -307,10 +499,27 @@ function Produtos() {
         <tbody>
 
 
+
+
+
           {produtos.map((item) => (
 
 
+
+
+
+
             <tr key={item.id}>
+
+
+
+
+              <td>
+                {item.id}
+              </td>
+
+
+
 
 
               <td>
@@ -318,9 +527,15 @@ function Produtos() {
               </td>
 
 
+
+
+
               <td>
                 {item.categoria}
               </td>
+
+
+
 
 
               <td>
@@ -328,13 +543,22 @@ function Produtos() {
               </td>
 
 
+
+
+
               <td>
-                {item.quantidade}
+                {item.quantity || item.quantidade}
               </td>
 
 
 
+
+
+
               <td>
+
+
+
 
 
                 <button
@@ -346,6 +570,10 @@ function Produtos() {
                   ✏️ Editar
 
                 </button>
+
+
+
+
 
 
 
@@ -361,14 +589,24 @@ function Produtos() {
 
 
 
+
+
+
               </td>
+
+
 
 
 
             </tr>
 
 
+
+
+
           ))}
+
+
 
 
 
@@ -376,7 +614,12 @@ function Produtos() {
 
 
 
+
+
+
       </table>
+
+
 
 
 

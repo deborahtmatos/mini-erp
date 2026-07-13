@@ -1,11 +1,11 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Sidebar from "./components/Sidebar";
-
 import Dashboard from "./pages/Dashboard";
 import Produtos from "./pages/Produtos";
 import Estoque from "./pages/Estoque";
 import Vendas from "./pages/Vendas";
+import Movimentacoes from "./pages/Movimentacoes";
 
 
 function App() {
@@ -27,6 +27,11 @@ function App() {
             <Route path="/estoque" element={<Estoque />} />
 
             <Route path="/vendas" element={<Vendas />} />
+
+            <Route
+              path="/movimentacoes"
+              element={<Movimentacoes />}
+            />
 
           </Routes>
 
