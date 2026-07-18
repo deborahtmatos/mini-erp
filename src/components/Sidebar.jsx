@@ -4,13 +4,14 @@ import {
   Warehouse, 
   ShoppingCart,
   History,
-  ChartNoAxesCombined
+  ChartNoAxesCombined,
+  UserRound
 } from "lucide-react";
 
 import { Link } from "react-router-dom";
 
 
-function Sidebar() {
+function Sidebar({ email, onLogout }) {
 
   return (
 
@@ -57,8 +58,18 @@ function Sidebar() {
           Relatórios
         </Link>
 
+        <Link to="/perfil">
+          <UserRound size={20} />
+          Meu perfil
+        </Link>
+
 
       </nav>
+
+      <div className="sidebar-footer">
+        <span title={email}>{email}</span>
+        <button type="button" onClick={() => void onLogout()}>Sair</button>
+      </div>
 
 
     </aside>

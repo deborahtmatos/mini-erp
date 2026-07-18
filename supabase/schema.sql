@@ -37,6 +37,10 @@ alter table public.produtos enable row level security;
 alter table public.movimentacoes enable row level security;
 alter table public.vendas enable row level security;
 
+drop policy if exists "demo public access to produtos" on public.produtos;
+drop policy if exists "demo public access to movimentacoes" on public.movimentacoes;
+drop policy if exists "demo public access to vendas" on public.vendas;
+
 create policy "demo public access to produtos" on public.produtos for all to anon, authenticated using (true) with check (true);
 create policy "demo public access to movimentacoes" on public.movimentacoes for all to anon, authenticated using (true) with check (true);
 create policy "demo public access to vendas" on public.vendas for all to anon, authenticated using (true) with check (true);
@@ -105,3 +109,5 @@ $$;
 
 grant execute on function public.registrar_movimentacao_estoque(bigint, text, integer) to anon, authenticated;
 grant execute on function public.registrar_venda(bigint, integer) to anon, authenticated;
+
+notify pgrst, 'reload schema';
