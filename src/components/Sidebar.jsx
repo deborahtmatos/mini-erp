@@ -3,7 +3,8 @@ import {
   Package, 
   Warehouse, 
   ShoppingCart,
-  History
+  History,
+  ChartNoAxesCombined
 } from "lucide-react";
 
 import { Link } from "react-router-dom";
@@ -49,6 +50,11 @@ function Sidebar() {
         <Link to="/vendas">
           <ShoppingCart size={20} />
           Vendas
+        </Link>
+
+        <Link to="/relatorios">
+          <ChartNoAxesCombined size={20} />
+          Relatórios
         </Link>
 
 

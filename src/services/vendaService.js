@@ -4,21 +4,20 @@ function tratarErro(error) {
   throw new Error(error.message || "Não foi possível concluir a operação.");
 }
 
-export async function buscarMovimentacoes() {
-  const { data, error } = await supabase.from("movimentacoes").select("*").order("created_at", { ascending: false });
+export async function buscarVendas() {
+  const { data, error } = await supabase.from("vendas").select("*").order("created_at", { ascending: false });
   if (error) tratarErro(error);
   return data;
 }
 
-export async function movimentarEstoque(produtoId, tipo, quantidade) {
+export async function registrarVenda(produtoId, quantidade) {
   const quantidadeNumerica = Number(quantidade);
   if (!Number.isInteger(quantidadeNumerica) || quantidadeNumerica <= 0) {
     throw new Error("Informe uma quantidade inteira válida.");
   }
 
-  const { error } = await supabase.rpc("registrar_movimentacao_estoque", {
+  const { error } = await supabase.rpc("registrar_venda", {
     p_produto_id: produtoId,
-    p_tipo: tipo,
     p_quantidade: quantidadeNumerica
   });
   if (error) tratarErro(error);

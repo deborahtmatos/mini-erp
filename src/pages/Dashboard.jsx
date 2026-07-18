@@ -1,287 +1,33 @@
 import { useEffect, useState } from "react";
+import { buscarProdutos } from "../services/produtoService";
 
-import {
-  buscarProdutos
-} from "../services/produtoService";
-
+const moeda = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 
 function Dashboard() {
-
-
-  const [totalProdutos, setTotalProdutos] = useState(0);
-
-  const [totalEstoque, setTotalEstoque] = useState(0);
-
-  const [valorEstoque, setValorEstoque] = useState(0);
-
-  const [estoqueBaixo, setEstoqueBaixo] = useState(0);
-
-
-
-
+  const [dados, setDados] = useState({ totalProdutos: 0, totalEstoque: 0, valorEstoque: 0, estoqueBaixo: 0 });
+  const [erro, setErro] = useState("");
 
   useEffect(() => {
-
-
-    carregarDashboard();
-
-
+    let ativo = true;
+    buscarProdutos()
+      .then((produtos) => {
+        if (!ativo) return;
+        const totalEstoque = produtos.reduce((total, produto) => total + produto.quantidade, 0);
+        const valorEstoque = produtos.reduce((total, produto) => total + Number(produto.preco) * produto.quantidade, 0);
+        setDados({ totalProdutos: produtos.length, totalEstoque, valorEstoque, estoqueBaixo: produtos.filter((produto) => produto.quantidade <= 5).length });
+      })
+      .catch((error) => ativo && setErro(error.message));
+    return () => { ativo = false; };
   }, []);
 
-
-
-
-
-
-
-  function carregarDashboard() {
-
-
-
-    const produtos = buscarProdutos();
-
-
-
-
-    setTotalProdutos(produtos.length);
-
-
-
-
-
-
-
-    const quantidadeTotal = produtos.reduce(
-
-
-      (total, produto) =>
-
-        total + Number(produto.quantidade || 0),
-
-
-      0
-
-
-    );
-
-
-
-    setTotalEstoque(quantidadeTotal);
-
-
-
-
-
-
-
-
-    const valorTotal = produtos.reduce(
-
-
-      (total, produto) => {
-
-
-
-        const preco = Number(
-
-          String(produto.preco)
-
-            .replace(",", ".")
-
-        );
-
-
-
-        const quantidade = Number(
-
-          produto.quantidade || 0
-
-        );
-
-
-
-
-        return total + (preco * quantidade);
-
-
-
-      },
-
-
-      0
-
-
-    );
-
-
-
-
-    setValorEstoque(valorTotal);
-
-
-
-
-
-
-
-
-    const produtosComEstoqueBaixo = produtos.filter(
-
-
-      (produto) =>
-
-        Number(produto.quantidade) <= 5
-
-
-    );
-
-
-
-
-    setEstoqueBaixo(
-      produtosComEstoqueBaixo.length
-    );
-
-
-
-  }
-
-
-
-
-
-
-
-  return (
-
-
-    <div className="dashboard">
-
-
-
-      <h1>
-        Dashboard
-      </h1>
-
-
-
-
-
-      <div className="cards">
-
-
-
-
-
-
-        <div className="card">
-
-
-          <h3>
-            Produtos cadastrados
-          </h3>
-
-
-          <p>
-            {totalProdutos}
-          </p>
-
-
-
-        </div>
-
-
-
-
-
-
-
-
-        <div className="card">
-
-
-          <h3>
-            Itens em estoque
-          </h3>
-
-
-          <p>
-            {totalEstoque}
-          </p>
-
-
-
-        </div>
-
-
-
-
-
-
-
-
-        <div className="card">
-
-
-          <h3>
-            Valor do estoque
-          </h3>
-
-
-          <p>
-
-            R$ {valorEstoque.toFixed(2)}
-
-          </p>
-
-
-
-        </div>
-
-
-
-
-
-
-
-
-        <div className="card">
-
-
-          <h3>
-            Estoque baixo
-          </h3>
-
-
-          <p>
-
-            {estoqueBaixo}
-
-          </p>
-
-
-
-        </div>
-
-
-
-
-
-      </div>
-
-
-
-
-
-    </div>
-
-
-
-  );
-
-
+  if (erro) return <p className="mensagem erro">{erro}</p>;
+
+  return <div className="dashboard"><h1>Dashboard</h1><div className="cards">
+    <div className="card"><h3>Produtos cadastrados</h3><p>{dados.totalProdutos}</p></div>
+    <div className="card"><h3>Itens em estoque</h3><p>{dados.totalEstoque}</p></div>
+    <div className="card"><h3>Valor do estoque</h3><p>{moeda.format(dados.valorEstoque)}</p></div>
+    <div className="card"><h3>Estoque baixo</h3><p>{dados.estoqueBaixo}</p></div>
+  </div></div>;
 }
-
-
 
 export default Dashboard;

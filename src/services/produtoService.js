@@ -1,89 +1,40 @@
-const CHAVE = "produtos";
+import { supabase } from "../lib/supabase";
 
+function validarProduto(produto) {
+  const nome = produto.nome?.trim();
+  const preco = Number(String(produto.preco).replace(",", "."));
+  const quantidade = Number(produto.quantidade);
 
-// Buscar produtos salvos
-export function buscarProdutos() {
+  if (!nome) throw new Error("Informe o nome do produto.");
+  if (!Number.isFinite(preco) || preco < 0) throw new Error("Informe um preço válido.");
+  if (!Number.isInteger(quantidade) || quantidade < 0) throw new Error("Informe uma quantidade inteira válida.");
 
-  const produtosSalvos = localStorage.getItem(CHAVE);
-
-  if (produtosSalvos) {
-    return JSON.parse(produtosSalvos);
-  }
-
-  return [];
-
+  return { nome, categoria: produto.categoria?.trim() || "", preco, quantidade };
 }
 
-
-
-// Salvar produtos
-export function salvarProdutos(produtos) {
-
-  localStorage.setItem(
-    CHAVE,
-    JSON.stringify(produtos)
-  );
-
+function tratarErro(error) {
+  throw new Error(error.message || "Não foi possível concluir a operação.");
 }
 
-
-
-// Adicionar produto
-export function adicionarProduto(produto) {
-
-  const produtos = buscarProdutos();
-
-  const novosProdutos = [
-    ...produtos,
-    produto
-  ];
-
-  salvarProdutos(novosProdutos);
-
-  return novosProdutos;
-
+export async function buscarProdutos() {
+  const { data, error } = await supabase.from("produtos").select("*").order("nome");
+  if (error) tratarErro(error);
+  return data;
 }
 
-
-
-// Atualizar produto
-export function atualizarProduto(produtoAtualizado) {
-
-  const produtos = buscarProdutos();
-
-
-  const novosProdutos = produtos.map((produto) =>
-
-    produto.id === produtoAtualizado.id
-      ? produtoAtualizado
-      : produto
-
-  );
-
-
-  salvarProdutos(novosProdutos);
-
-  return novosProdutos;
-
+export async function adicionarProduto(produto) {
+  const { data, error } = await supabase.from("produtos").insert(validarProduto(produto)).select().single();
+  if (error) tratarErro(error);
+  return data;
 }
 
+export async function atualizarProduto(id, produto) {
+  const { data, error } = await supabase.from("produtos").update(validarProduto(produto)).eq("id", id).select().single();
+  if (error) tratarErro(error);
+  return data;
+}
 
-
-// Excluir produto
-export function removerProduto(id) {
-
-  const produtos = buscarProdutos();
-
-
-  const novosProdutos = produtos.filter(
-
-    (produto) => produto.id !== id
-
-  );
-
-
-  salvarProdutos(novosProdutos);
-
-  return novosProdutos;
-
+export async function removerProduto(id) {
+  const { error } = await supabase.from("produtos").delete().eq("id", id);
+  if (error) tratarErro(error);
 }

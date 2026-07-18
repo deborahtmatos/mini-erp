@@ -1,16 +1,11 @@
-# React + Vite
+# Mini ERP
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicação React para controle de produtos, estoque, vendas, movimentações e relatórios.
 
-Currently, two official plugins are available:
+## Configuração
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+1. Copie `.env.example` para `.env` e preencha a URL e a chave pública do Supabase.
+2. Execute o conteúdo de `supabase/schema.sql` no SQL Editor do seu projeto Supabase.
+3. Instale dependências com `npm install` e inicie com `npm run dev`.
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+As políticas do script permitem acesso anônimo para demonstração. Antes de publicar, implemente autenticação e substitua essas políticas por regras restritas a cada usuário ou empresa.
