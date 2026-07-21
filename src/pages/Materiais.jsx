@@ -24,6 +24,18 @@ const categorias = [
   "Outros",
 ];
 
+const unidades = [
+  "un",
+  "m",
+  "kg",
+  "g",
+  "cm",
+  "cartela",
+  "par",
+  "rolo",
+  "pacote",
+];
+
 const inicial = {
   nome: "",
   categoria: "",
@@ -135,15 +147,21 @@ function Materiais() {
           ))}
         </select>
 
-        <input
-          type="text"
-          placeholder="Unidade (un, m, kg...)"
+        <select
           value={material.unidade}
           onChange={(e) =>
             setMaterial({ ...material, unidade: e.target.value })
           }
           required
-        />
+        >
+          <option value="">Selecione a unidade</option>
+
+          {unidades.map((unidade) => (
+            <option key={unidade} value={unidade}>
+              {unidade}
+            </option>
+          ))}
+        </select>
 
         <input
           type="number"
