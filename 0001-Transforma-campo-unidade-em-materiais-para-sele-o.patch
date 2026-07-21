@@ -1,0 +1,65 @@
+From 7652e326c4f17c5afb98910df01a50cbe7298325 Mon Sep 17 00:00:00 2001
+From: Deborah Matos <deborahtmatos@users.noreply.github.com>
+Date: Tue, 21 Jul 2026 02:30:45 +0000
+Subject: [PATCH] =?UTF-8?q?Transforma=20campo=20unidade=20em=20materiais?=
+ =?UTF-8?q?=20para=20sele=C3=A7=C3=A3o?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ src/pages/Materiais.jsx | 26 ++++++++++++++++++++++----
+ 1 file changed, 22 insertions(+), 4 deletions(-)
+
+diff --git a/src/pages/Materiais.jsx b/src/pages/Materiais.jsx
+index 83f5831..795fb61 100644
+--- a/src/pages/Materiais.jsx
++++ b/src/pages/Materiais.jsx
+@@ -24,6 +24,18 @@ const categorias = [
+   "Outros",
+ ];
+ 
++const unidades = [
++  "un",
++  "m",
++  "kg",
++  "g",
++  "cm",
++  "cartela",
++  "par",
++  "rolo",
++  "pacote",
++];
++
+ const inicial = {
+   nome: "",
+   categoria: "",
+@@ -135,15 +147,21 @@ function Materiais() {
+           ))}
+         </select>
+ 
+-        <input
+-          type="text"
+-          placeholder="Unidade (un, m, kg...)"
++        <select
+           value={material.unidade}
+           onChange={(e) =>
+             setMaterial({ ...material, unidade: e.target.value })
+           }
+           required
+-        />
++        >
++          <option value="">Selecione a unidade</option>
++
++          {unidades.map((unidade) => (
++            <option key={unidade} value={unidade}>
++              {unidade}
++            </option>
++          ))}
++        </select>
+ 
+         <input
+           type="number"
+-- 
+2.43.0
+
